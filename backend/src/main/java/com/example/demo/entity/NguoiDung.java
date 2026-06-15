@@ -21,6 +21,18 @@ public class NguoiDung {
 
     @Column(name = "vai_tro")
     private String vaiTro;
+
+    @Column(name = "ho_ten", columnDefinition = "nvarchar(100)")
+    private String hoTen;
+
+    @Column(name = "so_dien_thoai")
+    private String soDienThoai;
+
+    @Column(name = "trang_thai")
+    private String trangThai;
+
+    @Column(name = "ngay_tao")
+    private java.time.LocalDateTime ngayTao;
     public String getVaiTro() {
     return vaiTro;
 }
@@ -56,5 +68,37 @@ public class NguoiDung {
 
     public void setMatKhau(String matKhau) {
         this.matKhau = matKhau;
+    }
+
+    public String getHoTen() {
+        return hoTen;
+    }
+
+    public void setHoTen(String hoTen) {
+        this.hoTen = hoTen;
+    }
+
+    public String getSoDienThoai() {
+        return soDienThoai;
+    }
+
+    public void setSoDienThoai(String soDienThoai) {
+        this.soDienThoai = soDienThoai;
+    }
+
+    public String getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    public java.time.LocalDateTime getNgayTao() {
+        return ngayTao;
+    }
+
+    public void setNgayTao(java.time.LocalDateTime ngayTao) {
+        this.ngayTao = ngayTao;
     }
 }

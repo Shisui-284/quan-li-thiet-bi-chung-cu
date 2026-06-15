@@ -8,7 +8,10 @@ import CreateTicketPage from './pages/CreateTicketPage';
 import TechMyTicketsPage from './pages/TechMyTicketsPage';
 import TechTicketDetailPage from './pages/TechTicketDetailPage';
 import TechHistoryPage from './pages/TechHistoryPage';
-import ReportPage from './pages/ReportPage'; // Đã thêm import
+import ReportPage from './pages/ReportPage';
+import TechniciansPage from './pages/TechniciansPage';
+import ContractorsPage from './pages/ContractorsPage';
+import MaintenancePlansPage from './pages/MaintenancePlansPage';
 
 function App() {
   return (
@@ -23,6 +26,9 @@ function App() {
         <Route path="/devices" element={<DevicePage />} />
         <Route path="/tickets" element={<TicketPage />} />
         <Route path="/tickets/new" element={<CreateTicketPage />} />
+        <Route path="/technicians" element={<TechniciansPage />} />
+        <Route path="/contractors" element={<ContractorsPage />} />
+        <Route path="/maintenance-plans" element={<MaintenancePlansPage />} />
 
         {/* Các trang dành cho nhân viên kỹ thuật (Mobile View) */}
         <Route path="/tech-mobile" element={<TechMyTicketsPage />} />

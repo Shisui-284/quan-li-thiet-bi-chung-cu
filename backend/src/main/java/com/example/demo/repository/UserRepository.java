@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<NguoiDung, Long> {
     // Phải khớp với field 'tenDangNhap' trong NguoiDung.java
     Optional<NguoiDung> findByTenDangNhap(String tenDangNhap);
+    java.util.List<NguoiDung> findByVaiTro(String vaiTro);
 }

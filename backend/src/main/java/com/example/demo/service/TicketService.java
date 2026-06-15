@@ -24,8 +24,11 @@ public class TicketService {
 
     // 1. Lấy tất cả phiếu cho Admin
     public List<PhieuBaoHong> getTicketGrid() {
-        return ticketRepository.findAll();
+        return ticketRepository.findTicketManagementGrid();
     }
+
+    @Autowired 
+    private com.example.demo.repository.DeviceRepository deviceRepository;
 
     // 2. Tạo phiếu mới (Dành cho Lễ tân/Cư dân)
     public PhieuBaoHong createPublicTicket(Long maThietBi, String tieuDe, String moTaLoi, String mucDoUuTien) {
@@ -35,7 +38,9 @@ public class TicketService {
         phieu.setMucDoUuTien(mucDoUuTien);
         phieu.setNgayTao(LocalDateTime.now());
         phieu.setTrangThai("CHO_PHAN_CONG"); // Trạng thái mặc định
-        // phieu.setThietBiId(maThietBi); // Bỏ comment dòng này nếu bạn có field này trong Entity
+        if (maThietBi != null) {
+            deviceRepository.findById(maThietBi).ifPresent(phieu::setThietBi);
+        }
         return ticketRepository.save(phieu);
     }
 
@@ -44,8 +49,10 @@ public class TicketService {
     public PhieuBaoHong assignTicket(Long ticketId, Long techId) {
         PhieuBaoHong phieu = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu ID: " + ticketId));
-        // phieu.setNguoiThucHienId(techId); // Cập nhật ID thợ
-        phieu.setTrangThai("DANG_XU_LY");
+        NguoiDung tech = userRepository.findById(techId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thợ ID: " + techId));
+        phieu.setNguoiXuLy(tech);
+        phieu.setTrangThai("DA_PHAN_CONG");
         return ticketRepository.save(phieu);
     }
 
@@ -64,10 +71,11 @@ public class TicketService {
         return ticketRepository.findHistory(user.getMaNguoiDung());
     }
 
-    // 6. Xem chi tiết
+    // 6. Xem chi tiết (dùng custom query JOIN FETCH để tránh LazyInit)
     public PhieuBaoHong getDetail(Long ticketId) {
-        return ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy phiếu"));
+        PhieuBaoHong p = ticketRepository.findDetail(ticketId);
+        if (p == null) throw new RuntimeException("Không tìm thấy phiếu");
+        return p;
     }
 
     // 7. Hoàn thành phiếu
@@ -77,17 +85,29 @@ public class TicketService {
                 .orElseThrow(() -> new RuntimeException("Phiếu không tồn tại"));
         ticket.setTrangThai("HOAN_THANH");
         ticket.setNgayHoanThanh(LocalDateTime.now());
-        // ticket.setGhiChuKetQua(request.getGhiChuKetQua());
+        ticket.setGhiChuKetQua(request.getGhiChuKetQua());
         return ticketRepository.save(ticket);
     }
 
-    // 8. Báo cáo nhanh
+    // 8. Báo cáo nhanh (Kỹ thuật viên tự báo khi tuần tra)
     public PhieuBaoHong createQuickReport(CreateTicketRequest request) {
         PhieuBaoHong phieu = new PhieuBaoHong();
         phieu.setTieuDe(request.getTieuDe());
         phieu.setMoTaLoi(request.getMoTaLoi());
+        phieu.setMucDoUuTien(request.getMucDoUuTien());
         phieu.setNgayTao(LocalDateTime.now());
-        phieu.setTrangThai("MOI");
+        phieu.setTrangThai("CHO_PHAN_CONG");
+        if (request.getMaThietBi() != null) {
+            deviceRepository.findById(request.getMaThietBi()).ifPresent(phieu::setThietBi);
+        }
         return ticketRepository.save(phieu);
+    }
+
+    // 9. Xóa phiếu
+    @Transactional
+    public void deleteTicket(Long ticketId) {
+        if (!ticketRepository.existsById(ticketId))
+            throw new RuntimeException("Không tìm thấy phiếu ID: " + ticketId);
+        ticketRepository.deleteById(ticketId);
     }
 }

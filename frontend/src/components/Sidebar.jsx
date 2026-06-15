@@ -31,11 +31,11 @@ export default function Sidebar() {
             </li>
 
             {/* 3. Kế hoạch Bảo trì */}
-            <li className="nav-item" style={{ opacity: 0.7 }}>
-                <a className="nav-link" href="#" onClick={(e) => e.preventDefault()}>
+            <li className="nav-item">
+                <Link className="nav-link" to="/maintenance-plans">
                     <i className="fas fa-fw fa-calendar-check"></i>
                     <span>📅 Kế hoạch Bảo trì</span>
-                </a>
+                </Link>
             </li>
 
             {/* 4. Điều phối Sự cố */}
@@ -47,19 +47,19 @@ export default function Sidebar() {
             </li>
 
             {/* 5. Nhân sự Kỹ thuật */}
-            <li className="nav-item" style={{ opacity: 0.7 }}>
-                <a className="nav-link" href="#" onClick={(e) => e.preventDefault()}>
+            <li className="nav-item">
+                <Link className="nav-link" to="/technicians">
                     <i className="fas fa-fw fa-users"></i>
                     <span>👷 Nhân sự Kỹ thuật</span>
-                </a>
+                </Link>
             </li>
 
             {/* 6. Đơn vị Bảo trì */}
-            <li className="nav-item" style={{ opacity: 0.7 }}>
-                <a className="nav-link" href="#" onClick={(e) => e.preventDefault()}>
+            <li className="nav-item">
+                <Link className="nav-link" to="/contractors">
                     <i className="fas fa-fw fa-handshake"></i>
                     <span>🤝 Đơn vị Bảo trì</span>
-                </a>
+                </Link>
             </li>
         </ul>
     );
