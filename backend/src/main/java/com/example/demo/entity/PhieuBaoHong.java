@@ -38,6 +38,61 @@ public class PhieuBaoHong {
     @Column(name = "ngay_tao")
     private LocalDateTime ngayTao;
 
+
+
+    @Column(name = "ghi_chu_ket_qua", columnDefinition = "nvarchar(MAX)")
+    private String ghiChuKetQua;
+
+    @Column(name = "anh_nghiem_thu")
+    private String anhNghiemThu;
+
+    @Column(name = "ngay_hoan_thanh")
+    private LocalDateTime ngayHoanThanh;
+    public String getGhiChuKetQua() {
+        return ghiChuKetQua;
+        }
+
+    public void setGhiChuKetQua(String ghiChuKetQua) {
+        this.ghiChuKetQua = ghiChuKetQua;
+        }
+
+    public String getAnhNghiemThu() {
+        return anhNghiemThu;
+        }
+
+    public void setAnhNghiemThu(String anhNghiemThu) {
+        this.anhNghiemThu = anhNghiemThu;
+        }
+
+    public LocalDateTime getNgayHoanThanh() {
+        return ngayHoanThanh;
+        }
+
+    public void setNgayHoanThanh(LocalDateTime ngayHoanThanh) {
+        this.ngayHoanThanh = ngayHoanThanh;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public PhieuBaoHong() {
     }
 

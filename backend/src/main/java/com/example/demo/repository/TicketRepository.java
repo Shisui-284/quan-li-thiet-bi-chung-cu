@@ -25,4 +25,38 @@ public interface TicketRepository extends JpaRepository<PhieuBaoHong, Long> {
             "LEFT JOIN FETCH p.nguoiXuLy " +
             "ORDER BY p.ngayTao DESC")
     List<PhieuBaoHong> findTicketManagementGrid();
+    @Query("""
+       SELECT p
+       FROM PhieuBaoHong p
+       LEFT JOIN FETCH p.thietBi
+       WHERE p.nguoiXuLy.maNguoiDung = :techId
+       ORDER BY p.ngayTao DESC
+       """)
+    List<PhieuBaoHong> findMyTickets(
+        @Param("techId") Long techId);
+
+    @Query("""
+       SELECT p
+       FROM PhieuBaoHong p
+       LEFT JOIN FETCH p.thietBi
+       WHERE p.nguoiXuLy.maNguoiDung = :techId
+       AND p.trangThai='HOAN_THANH'
+       ORDER BY p.ngayHoanThanh DESC
+       """)
+    List<PhieuBaoHong> findHistory(
+        @Param("techId") Long techId);
+
+    @Query("""
+       SELECT p
+       FROM PhieuBaoHong p
+       LEFT JOIN FETCH p.thietBi
+       WHERE p.id=:id
+       """)
+    PhieuBaoHong findDetail(
+        @Param("id") Long id);
+
+
+
+
+
 }

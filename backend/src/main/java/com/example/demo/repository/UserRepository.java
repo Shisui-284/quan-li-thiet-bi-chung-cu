@@ -7,6 +7,6 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<NguoiDung, Long> {
-    // Hàm tìm kiếm người dùng bằng tên đăng nhập phục vụ cho logic Login
+    // Phải khớp với field 'tenDangNhap' trong NguoiDung.java
     Optional<NguoiDung> findByTenDangNhap(String tenDangNhap);
 }

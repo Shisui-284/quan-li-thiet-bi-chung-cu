@@ -1,53 +1,38 @@
 package com.example.demo.controller;
 
+import com.example.demo.DTO.CreateTicketRequest;
 import com.example.demo.entity.PhieuBaoHong;
 import com.example.demo.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tickets")
-@CrossOrigin(origins = "*") // Mở cửa cho React cổng 5173 gọi sang không bị lỗi CORS
+@CrossOrigin(origins = "*")
 public class TicketController {
+    @Autowired private TicketService ticketService;
 
-    @Autowired
-    private TicketService ticketService;
-
-    // 1. API lấy danh sách phiếu cho Admin Dashboard
     @GetMapping
     public ResponseEntity<List<PhieuBaoHong>> getAllTickets() {
-        List<PhieuBaoHong> danhSach = ticketService.getTicketGrid();
-        return ResponseEntity.ok(danhSach);
+        return ResponseEntity.ok(ticketService.getTicketGrid());
     }
 
-    // 2. API tạo phiếu báo hỏng mới (Dành cho Lễ tân/Cư dân)
     @PostMapping("/public")
-    public ResponseEntity<?> createTicket(
-            @RequestParam Long thietBiId,
-            @RequestParam String tieuDe,
-            @RequestParam String moTaLoi,
-            @RequestParam String mucDoUuTien) {
-        try {
-            PhieuBaoHong phieuMoi = ticketService.createPublicTicket(thietBiId, tieuDe, moTaLoi, mucDoUuTien);
-            return ResponseEntity.ok(phieuMoi);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+public ResponseEntity<?> createTicket(@RequestBody CreateTicketRequest request) {
+    try {
+        // Truyền tham số từ DTO vào service
+        PhieuBaoHong phieuMoi = ticketService.createPublicTicket(
+            request.getMaThietBi(), 
+            request.getTieuDe(), 
+            request.getMoTaLoi(), 
+            request.getMucDoUuTien()
+        );
+        return ResponseEntity.ok(phieuMoi);
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
-
-    // 3. API phân công thợ kỹ thuật
-    @PutMapping("/{ticketId}/assign")
-    public ResponseEntity<?> assignTicket(
-            @PathVariable Long ticketId,
-            @RequestParam Long techId) {
-        try {
-            PhieuBaoHong phieuDaGiao = ticketService.assignTicket(ticketId, techId);
-            return ResponseEntity.ok(phieuDaGiao);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+}
 }

@@ -17,6 +17,20 @@ public class NguoiDung {
     @Column(name = "mat_khau")
     private String matKhau;
 
+
+
+    @Column(name = "vai_tro")
+    private String vaiTro;
+    public String getVaiTro() {
+    return vaiTro;
+}
+
+    public void setVaiTro(String vaiTro) {
+        this.vaiTro = vaiTro;
+}
+
+
+
     public NguoiDung() {
     }
 
