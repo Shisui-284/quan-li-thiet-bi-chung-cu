@@ -24,7 +24,7 @@ export default function MaintenancePlansPage() {
     const fetchData = async () => {
         try {
             const [pRes, dRes, cRes] = await Promise.all([
-                axios.get(API),
+                axios.get(`${API}/with-status`),
                 axios.get(DEVICE_API),
                 axios.get(CONTRACTOR_API)
             ]);
@@ -116,23 +116,43 @@ export default function MaintenancePlansPage() {
                                         </thead>
                                         <tbody>
                                             {plans.length === 0 && <tr><td colSpan={8} className="text-center text-muted py-4">Chưa có lịch bảo trì nào</td></tr>}
-                                            {plans.map(p => (
-                                                <tr key={p.id}>
-                                                    <td className="font-weight-bold text-primary">#{p.id}</td>
-                                                    <td className="font-weight-bold">{p.thietBi?.tenThietBi}</td>
-                                                    <td>{p.donVi?.tenDonVi || 'Nội bộ'}</td>
-                                                    <td>{p.chuKyNgay} ngày</td>
-                                                    <td>{p.ngayBaoTriGanNhat ? new Date(p.ngayBaoTriGanNhat).toLocaleString('vi-VN') : '—'}</td>
-                                                    <td className="text-danger font-weight-bold">{p.ngayBaoTriTiepTheo ? new Date(p.ngayBaoTriTiepTheo).toLocaleString('vi-VN') : '—'}</td>
-                                                    <td>
-                                                        <span className={`badge ${p.trangThai === 'DANG_THEO_DOI' ? 'badge-info' : 'badge-secondary'}`}>{p.trangThai}</span>
-                                                    </td>
-                                                    <td className="text-center">
-                                                        <button className="btn btn-warning btn-sm mr-1" onClick={() => openEdit(p)} title="Sửa"><i className="fas fa-edit"></i></button>
-                                                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p.id)} title="Xóa"><i className="fas fa-trash"></i></button>
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                            {plans.map(p => {
+                                                let alertBgColor = '#d4edda'; // SAFE - Xanh
+                                                let alertTextColor = '#155724';
+                                                if (p.alertStatus === 'DANGER') {
+                                                    alertBgColor = '#f8d7da'; // DANGER - Đỏ
+                                                    alertTextColor = '#721c24';
+                                                } else if (p.alertStatus === 'WARNING') {
+                                                    alertBgColor = '#fff3cd'; // WARNING - Vàng
+                                                    alertTextColor = '#856404';
+                                                }
+                                                
+                                                return (
+                                                    <tr key={p.id} style={{ backgroundColor: alertBgColor }}>
+                                                        <td className="font-weight-bold text-primary">#{p.id}</td>
+                                                        <td className="font-weight-bold">{p.thietBi?.tenThietBi}</td>
+                                                        <td>{p.donVi?.tenDonVi || 'Nội bộ'}</td>
+                                                        <td>{p.chuKyNgay} ngày</td>
+                                                        <td>{p.ngayBaoTriGanNhat ? new Date(p.ngayBaoTriGanNhat).toLocaleString('vi-VN') : '—'}</td>
+                                                        <td style={{ color: alertTextColor }} className="font-weight-bold">
+                                                            {p.ngayBaoTriTiepTheo ? new Date(p.ngayBaoTriTiepTheo).toLocaleString('vi-VN') : '—'}
+                                                        </td>
+                                                        <td>
+                                                            <span className={`badge ${
+                                                                p.alertStatus === 'DANGER' ? 'badge-danger' :
+                                                                p.alertStatus === 'WARNING' ? 'badge-warning text-dark' :
+                                                                'badge-success'
+                                                            }`}>
+                                                                {p.statusBadge}
+                                                            </span>
+                                                        </td>
+                                                        <td className="text-center">
+                                                            <button className="btn btn-warning btn-sm mr-1" onClick={() => openEdit(p)} title="Sửa"><i className="fas fa-edit"></i></button>
+                                                            <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p.id)} title="Xóa"><i className="fas fa-trash"></i></button>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
                                         </tbody>
                                     </table>
                                 </div>

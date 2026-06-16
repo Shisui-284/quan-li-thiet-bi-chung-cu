@@ -41,28 +41,21 @@ export default function DashboardPage() {
                     totalTickets: tickets.length
                 });
 
-                // Fetch maintenance plans for warnings
-                const planRes = await axios.get(PLANS_API);
-                const plans = planRes.data;
-                const now = new Date();
+                // Fetch maintenance plan alerts
+                const alertRes = await axios.get(`${PLANS_API}/alerts`);
+                const alerts = alertRes.data;
                 
-                const calculatedWarnings = plans.map(p => {
-                    if (!p.ngayBaoTriTiepTheo) return null;
-                    const nextDate = new Date(p.ngayBaoTriTiepTheo);
-                    const diffTime = nextDate - now;
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    
-                    if (diffDays <= 7) {
-                        return {
-                            id: p.id,
-                            tenThietBi: p.thietBi?.tenThietBi || 'Thiết bị không xác định',
-                            days: diffDays,
-                            isOverdue: diffDays < 0,
-                            date: nextDate.toLocaleDateString('vi-VN')
-                        };
-                    }
-                    return null;
-                }).filter(item => item !== null).sort((a, b) => a.days - b.days);
+                const calculatedWarnings = alerts
+                    .map(p => ({
+                        id: p.id,
+                        tenThietBi: p.thietBi?.tenThietBi || 'Thiết bị không xác định',
+                        days: p.daysRemaining,
+                        isOverdue: p.alertStatus === 'DANGER',
+                        alertStatus: p.alertStatus,
+                        statusBadge: p.statusBadge,
+                        date: p.ngayBaoTriTiepTheo ? new Date(p.ngayBaoTriTiepTheo).toLocaleDateString('vi-VN') : 'N/A'
+                    }))
+                    .sort((a, b) => a.days - b.days);
 
                 setWarnings(calculatedWarnings);
             } catch (err) {
@@ -87,25 +80,30 @@ export default function DashboardPage() {
                         {/* Khu vực Cảnh Báo */}
                         <div className="alert alert-danger shadow mb-4 border-left-danger" role="alert">
                             <h5 className="alert-heading font-weight-bold">
-                                <i className="fas fa-exclamation-triangle"></i> HẠNG MỤC YÊU CẦU BẢO TRÌ TRONG NGÀY
+                                <i className="fas fa-exclamation-triangle"></i> HẠNG MỤC YÊU CẦU BẢO TRÌ
                             </h5>
                             <hr />
                             {warnings.length === 0 ? (
                                 <p className="mb-0 font-weight-bold text-success"><i className="fas fa-check-circle"></i> Không có thiết bị nào quá hạn hoặc sắp đến hạn bảo trì.</p>
                             ) : (
                                 <ul className="mb-0 font-weight-bold" style={{ fontSize: '0.95rem', listStyleType: 'none', paddingLeft: 0 }}>
-                                    {warnings.map((w, idx) => (
-                                        <li key={idx} className="mb-2">
-                                            • <b>{w.tenThietBi}</b> - {' '}
-                                            {w.isOverdue ? (
-                                                <span className="badge badge-danger">QUÁ HẠN {Math.abs(w.days)} NGÀY</span>
-                                            ) : w.days === 0 ? (
-                                                <span className="badge badge-danger">HẾT HẠN HÔM NAY</span>
-                                            ) : (
-                                                <span className="badge badge-warning text-dark">CÒN {w.days} NGÀY ĐẾN HẠN ({w.date})</span>
-                                            )}
-                                        </li>
-                                    ))}
+                                    {warnings.map((w, idx) => {
+                                        let badgeClass = 'badge-success';
+                                        if (w.alertStatus === 'DANGER') {
+                                            badgeClass = 'badge-danger';
+                                        } else if (w.alertStatus === 'WARNING') {
+                                            badgeClass = 'badge-warning text-dark';
+                                        }
+                                        
+                                        return (
+                                            <li key={idx} className="mb-2">
+                                                • <b>{w.tenThietBi}</b> - {' '}
+                                                <span className={`badge ${badgeClass}`}>
+                                                    {w.statusBadge} ({w.date})
+                                                </span>
+                                            </li>
+                                        );
+                                    })}
                                 </ul>
                             )}
                         </div>
